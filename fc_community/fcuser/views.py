@@ -14,6 +14,12 @@ def home(request):
         
     return HttpResponse('Home!')
 
+def logout(request):
+    if request.session.get('user'):
+        del(request.session['user'])
+    
+    return redirect('/')
+
 def login(request):
 
     if request.method == 'GET':        
@@ -33,8 +39,6 @@ def login(request):
                 # 세션
                 request.session['user'] = fcuser.id
                 return redirect('/')
-
-                pass
             else:
                 res_data['error'] = '비밀번호를 틀렸습니다.'
         
