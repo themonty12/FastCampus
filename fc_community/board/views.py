@@ -4,6 +4,8 @@ from django.http import Http404
 from fcuser.models import Fcuser
 from .models import Board
 from .forms import BoardForm
+from tag.models import Tag
+
 
 # Create your views here.
 
@@ -33,11 +35,23 @@ def board_write(request):
             user_id = request.session.get('user')
             fcuser = Fcuser.objects.get(pk=user_id)
 
+            tags = form.cleaned_data['tags'].split(',')
+
             board = Board()
             board.title = form.cleaned_data['title']
             board.contents = form.cleaned_data['contents']
             board.writer = fcuser
             board.save()
+
+            for tag in tags:
+                if not tag:
+                    continue
+
+                _tag, _ = Tag.objects.get_or_create(name=tag)
+                board.tags.add(_tag)
+                
+
+            
 
             return redirect('/board/list/')
     
